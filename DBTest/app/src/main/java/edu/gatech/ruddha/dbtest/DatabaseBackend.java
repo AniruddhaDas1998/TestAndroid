@@ -121,7 +121,7 @@ public class DatabaseBackend extends SQLiteOpenHelper {
      * @throws NullPointerException if name or password are null
      */
     public String attemptGetSecretID(String name, String password) {
-        return ""
+        return "";
     }
 
 }
