@@ -66,11 +66,7 @@ public class DatabaseBackend extends SQLiteOpenHelper {
      */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // DO NOTHING
-        // Drop older table if existed
-        //db.execSQL("DROP TABLE IF EXISTS " + TABLE_CONTACTS);
-        // Create tables again
-        //onCreate(db);
+
     }
     /**
      * Private method to create a Database. Creates a single table to hold superhero data
@@ -108,9 +104,9 @@ public class DatabaseBackend extends SQLiteOpenHelper {
         String name = superhero.name;
         String password = superhero.password;
         String secretID = superhero.secretIdentity;
-        /*if (checkExists(email, TABLE_PHYSICIANS)) {
+        if (checkExists(name, TABLE_SUPERHEROES)) {
             return false;
-        }*/
+        }
         SQLiteDatabase db = this.getWritableDatabase();
         // Storing values for patient
         ContentValues newHero = new ContentValues();
@@ -122,6 +118,24 @@ public class DatabaseBackend extends SQLiteOpenHelper {
         db.close();
         return true;
     }
+
+    private boolean checkExists(String name, String tableSuperheroes) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String selectQuery = "SELECT * FROM " + tableSuperheroes;
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                if (name.equals(cursor.getString(0))) {
+                    db.close();
+                    return true;
+                }
+            } while (cursor.moveToNext());
+        }
+        db.close();
+        return false;
+    }
+
     /**
      * Public method to get secret ID of superhero. Only returns ID if the name
      * and password are correct
@@ -147,6 +161,9 @@ public class DatabaseBackend extends SQLiteOpenHelper {
                 }
             } while (cursor.moveToNext());
         }
+        db.close();
         return secretID;
     }
+
+
 }
