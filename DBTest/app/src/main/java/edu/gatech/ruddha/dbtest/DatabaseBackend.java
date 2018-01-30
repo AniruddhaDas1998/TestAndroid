@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.HashMap;
+import java.util.NoSuchElementException;
 
 /**
  * Class representation for backend of Database
@@ -31,6 +32,8 @@ public class DatabaseBackend extends SQLiteOpenHelper {
     private static final String KEY_NAME = "name";
     private static final String KEY_PASSWORD = "password";
     private static final String KEY_SECRETID = "secretIdentity";
+    private static final String KEY_ATTEMPTS = "attempts";
+
 
     private final String TAG = "DatabaseBackend";
 
@@ -42,7 +45,7 @@ public class DatabaseBackend extends SQLiteOpenHelper {
     public DatabaseBackend(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         mcontext = context;
-        //clearTables();
+        clearTables();
         createDB();
     }
 
@@ -54,7 +57,6 @@ public class DatabaseBackend extends SQLiteOpenHelper {
      */
     @Override
     public void onCreate(SQLiteDatabase db) {
-
     }
     /**
      * onUpgrade method to create db and satisfy superclass constraints. Check superclass
@@ -66,7 +68,6 @@ public class DatabaseBackend extends SQLiteOpenHelper {
      */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
     }
     /**
      * Private method to create a Database. Creates a single table to hold superhero data
@@ -82,7 +83,8 @@ public class DatabaseBackend extends SQLiteOpenHelper {
         // Creating Database
         String CREATE_PATIENTS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_SUPERHEROES + "("
                 + KEY_NAME + " TEXT PRIMARY KEY," +
-                KEY_PASSWORD + " TEXT," + KEY_SECRETID + " TEXT" + ")";
+                KEY_PASSWORD + " TEXT," + KEY_SECRETID + " TEXT," +
+                KEY_ATTEMPTS + " INTEGER"  + ")";
         db.execSQL(CREATE_PATIENTS_TABLE);
     }
     /**
@@ -113,12 +115,20 @@ public class DatabaseBackend extends SQLiteOpenHelper {
         newHero.put(KEY_NAME, name);
         newHero.put(KEY_PASSWORD, password);
         newHero.put(KEY_SECRETID, secretID);
+        newHero.put(KEY_ATTEMPTS, 0);
         // Inserting Row
         db.insert(TABLE_SUPERHEROES, null, newHero);
         db.close();
         return true;
     }
 
+    /**
+     * Private method to see if name exists as a key in tableSuperheroes
+     *
+     * @param name the name to check for in the database
+     * @param tableSuperheroes the superheroTable to check in for this name
+     * @return whether name is a key in tableSuperheroes
+     */
     private boolean checkExists(String name, String tableSuperheroes) {
         SQLiteDatabase db = this.getReadableDatabase();
         String selectQuery = "SELECT * FROM " + tableSuperheroes;
@@ -144,6 +154,7 @@ public class DatabaseBackend extends SQLiteOpenHelper {
      * @param password the password of above superhero.
      * @return the secret ID if correct credentials or null if wrong
      * @throws NullPointerException if name or password are null
+     * @throws NoSuchElementException if locked out
      */
     public String attemptGetSecretID(String name, String password) {
         if (name == null || password == null) {
@@ -157,7 +168,21 @@ public class DatabaseBackend extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 if (name.equals(cursor.getString(0)) && password.equals(cursor.getString(1))) {
-                    secretID = cursor.getString(2);
+                    if (password.equals(cursor.getString(1))) {
+                        if (cursor.getShort(3) > 3) {
+                            throw new NoSuchElementException("Too many attempts");
+                        }
+                        secretID = cursor.getString(2);
+                        String command = "UPDATE " + TABLE_SUPERHEROES + " SET "
+                                + KEY_ATTEMPTS + " = 0 WHERE "
+                                + KEY_NAME + "=?";
+                        db.execSQL(command, new String[] {name});
+                    } else {
+                        String command = "UPDATE " + TABLE_SUPERHEROES + " SET "
+                                + KEY_ATTEMPTS + " = " + KEY_ATTEMPTS + " +1 WHERE "
+                                + KEY_NAME + "=?";
+                        db.execSQL(command, new String[] {name});
+                    }
                 }
             } while (cursor.moveToNext());
         }
