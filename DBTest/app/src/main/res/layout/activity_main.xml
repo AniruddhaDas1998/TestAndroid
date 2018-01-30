@@ -7,7 +7,7 @@
     tools:context="edu.gatech.ruddha.dbtest.MainActivity">
 
     <EditText
-        android:id="@+id/exitText_password"
+        android:id="@+id/editText_password"
         android:layout_width="273dp"
         android:layout_height="46dp"
         android:layout_marginBottom="8dp"
@@ -25,7 +25,7 @@
         app:layout_constraintVertical_bias="0.267" />
 
     <EditText
-        android:id="@+id/exitText_name"
+        android:id="@+id/editText_name"
         android:layout_width="273dp"
         android:layout_height="46dp"
         android:layout_marginBottom="8dp"
@@ -43,7 +43,7 @@
         app:layout_constraintVertical_bias="0.066" />
 
     <EditText
-        android:id="@+id/exitText_secretID"
+        android:id="@+id/editText_secretID"
         android:layout_width="273dp"
         android:layout_height="46dp"
         android:layout_marginBottom="8dp"
