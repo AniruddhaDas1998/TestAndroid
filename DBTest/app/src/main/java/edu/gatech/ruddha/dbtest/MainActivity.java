@@ -14,15 +14,18 @@ public class MainActivity extends AppCompatActivity {
     Button getSI;
     Button addHero;
 
+    DatabaseHandler dh;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        dh = new DatabaseHandler(this);
 
-        /**
+        /*
          * Grab the dialog widgets so we can get info for later
          */
+
         nameText = (EditText) findViewById(R.id.editText_name);
         passwordText = (EditText) findViewById(R.id.editText_password);
         secretText = (EditText) findViewById(R.id.editText_secretID);
@@ -34,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String name = nameText.getText().toString();
                 String password = passwordText.getText().toString();
-                secretText.setText("");
+                secretText.setText(dh.attemptGetSecretID(name, password));
             }
         });
     }

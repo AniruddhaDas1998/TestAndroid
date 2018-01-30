@@ -1,5 +1,7 @@
 package edu.gatech.ruddha.dbtest;
 
+import android.content.Context;
+
 import java.util.HashMap;
 
 /**
@@ -10,7 +12,13 @@ public class DatabaseHandler {
 
   private HashMap<String, Superhero> elements;
 
-  public DatabaseHandler() {
+  private DatabaseBackend db;
+
+  private Context context;
+
+  public DatabaseHandler(Context context) {
+    this.context = context;
+    db = new DatabaseBackend(this.context);
     elements = new HashMap<>();
     populate();
   }
@@ -39,5 +47,17 @@ public class DatabaseHandler {
    */
   Superhero get(String name) {
     return null;
+  }
+
+  /**
+   * Public method to get secret ID of superhero
+   *
+   * @param name the name of the superhero whose secret identity is queried
+   * @param password the password of above superhero.
+   * @return the secret ID if correct credentials or null if wrong
+   * @throws NullPointerException if name or password are null
+   */
+  public String attemptGetSecretID(String name, String password) {
+    return db.attemptGetSecretID(name, password);
   }
 }
