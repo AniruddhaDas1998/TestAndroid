@@ -62,33 +62,41 @@
 
     <Button
         android:id="@+id/button_getSI"
-        android:layout_width="272dp"
-        android:layout_height="61dp"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:background="@drawable/round_button"
+        android:textColor="#ffffff"
+        android:textSize="19sp"
         android:text="Get Secret Identity!"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.141"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.673" />
+        app:layout_constraintVertical_bias="0.789" />
 
     <Button
         android:id="@+id/button_addHero"
-        android:layout_width="272dp"
-        android:layout_height="61dp"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:textColor="#ffffff"
+        android:textSize="19sp"
+        android:background="@drawable/round_button"
         android:text="Add Superhero"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.862"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.868" />
+        app:layout_constraintVertical_bias="0.789" />
 
     <Button
         android:id="@+id/button_reset"
