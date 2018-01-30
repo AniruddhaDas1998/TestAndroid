@@ -8,6 +8,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.util.NoSuchElementException;
+
 public class MainActivity extends AppCompatActivity {
 
     EditText nameText;
@@ -15,6 +17,7 @@ public class MainActivity extends AppCompatActivity {
     EditText secretText;
     Button getSI;
     Button addHero;
+    Button reset;
 
     DatabaseHandler dh;
 
@@ -33,14 +36,36 @@ public class MainActivity extends AppCompatActivity {
         secretText = (EditText) findViewById(R.id.editText_secretID);
         getSI  = (Button) findViewById(R.id.button_getSI);
         addHero = (Button) findViewById(R.id.button_addHero);
+        reset = (Button) findViewById(R.id.button_reset);
+
+        reset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dh.resetLogins();
+                Toast.makeText(getApplicationContext(), "Attempts cleared!",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
 
         getSI.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String name = nameText.getText().toString();
                 String password = passwordText.getText().toString();
-                String secretID = dh.attemptGetSecretID(name, password);
-                secretText.setText(secretID != null ? secretID : "Hidden");
+                try {
+                    String secretID = dh.attemptGetSecretID(name, password);
+                    /*if (secretID == null) {
+                        String text = "Cannot reveal password!";
+                        int duration = Toast.LENGTH_SHORT;
+                        Toast.makeText(getApplicationContext(), text, duration).show();
+                    }*/
+                    secretText.setText(secretID != null ? secretID : "Hidden");
+                } catch (NoSuchElementException e) {
+                    String text = "Too many log-in attempts!";
+                    int duration = Toast.LENGTH_SHORT;
+                    Toast.makeText(getApplicationContext(), text, duration).show();
+                    secretText.setText("<LOCKED OUT>");
+                }
             }
         });
 

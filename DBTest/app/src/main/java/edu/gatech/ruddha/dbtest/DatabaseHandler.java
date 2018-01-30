@@ -10,32 +10,32 @@ import java.util.HashMap;
 
 public class DatabaseHandler {
 
-  private HashMap<String, Superhero> elements;
+    private HashMap<String, Superhero> elements;
 
-  private DatabaseBackend db;
+    private DatabaseBackend db;
 
-  private Context context;
+    private Context context;
 
-  public DatabaseHandler(Context context) {
-    this.context = context;
-    db = new DatabaseBackend(this.context);
-    elements = new HashMap<>();
-    populate();
-  }
+    public DatabaseHandler(Context context) {
+        this.context = context;
+        db = new DatabaseBackend(this.context);
+        elements = new HashMap<>();
+        populate();
+    }
 
-  /**
-   * Populates the hashmap with the backend database
-   */
-  private void populate() {
+    /**
+     * Populates the hashmap with the backend database
+     */
+    private void populate() {
 
-  }
+    }
 
   /**
    * Adds superhero to the backend
    *
    * @param superhero the Superhero to be added
    */
-  boolean put(Superhero superhero) {
+    boolean put(Superhero superhero) {
       return db.addSuperhero(superhero);
   }
 
@@ -45,7 +45,7 @@ public class DatabaseHandler {
    * @param name The name of the superhero to be got
    * @return Superhero with the desired name
    */
-  Superhero get(String name) {
+    Superhero get(String name) {
     return null;
   }
 
@@ -57,7 +57,14 @@ public class DatabaseHandler {
    * @return the secret ID if correct credentials or null if wrong
    * @throws NullPointerException if name or password are null
    */
-  public String attemptGetSecretID(String name, String password) {
-    return db.attemptGetSecretID(name, password);
-  }
+    public String attemptGetSecretID(String name, String password) {
+      return db.attemptGetSecretID(name, password);
+    }
+
+    /**
+     * method to reset the attempts of logins for all users. For debugging purposes only.
+     */
+    public void resetLogins() {
+        db.resetLogins();
+    }
 }

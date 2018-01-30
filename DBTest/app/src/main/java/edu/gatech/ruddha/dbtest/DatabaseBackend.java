@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.util.HashMap;
 import java.util.NoSuchElementException;
@@ -45,7 +46,7 @@ public class DatabaseBackend extends SQLiteOpenHelper {
     public DatabaseBackend(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         mcontext = context;
-        clearTables();
+        //clearTables();
         createDB();
     }
 
@@ -167,11 +168,12 @@ public class DatabaseBackend extends SQLiteOpenHelper {
         String secretID = null;
         if (cursor.moveToFirst()) {
             do {
-                if (name.equals(cursor.getString(0)) && password.equals(cursor.getString(1))) {
+                if (name.equals(cursor.getString(0))) {
+                    //Log.d(TAG, "attempts so far " + cursor.getString(3))
+                    if (Integer.parseInt(cursor.getString(3)) > 3) {
+                        throw new NoSuchElementException("Too many attempts");
+                    }
                     if (password.equals(cursor.getString(1))) {
-                        if (cursor.getShort(3) > 3) {
-                            throw new NoSuchElementException("Too many attempts");
-                        }
                         secretID = cursor.getString(2);
                         String command = "UPDATE " + TABLE_SUPERHEROES + " SET "
                                 + KEY_ATTEMPTS + " = 0 WHERE "
@@ -190,5 +192,23 @@ public class DatabaseBackend extends SQLiteOpenHelper {
         return secretID;
     }
 
-
+    /**
+     * method to reset the attempts of logins for all users. For debugging purposes only.
+     */
+    public void resetLogins() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String selectQuery = "SELECT * FROM " + TABLE_SUPERHEROES;
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                String name = cursor.getString(0);
+                String command = "UPDATE " + TABLE_SUPERHEROES + " SET "
+                        + KEY_ATTEMPTS + " = 0 WHERE "
+                        + KEY_NAME + "=?";
+                db.execSQL(command, new String[] {name});
+            } while (cursor.moveToNext());
+        }
+        db.close();
+    }
 }
