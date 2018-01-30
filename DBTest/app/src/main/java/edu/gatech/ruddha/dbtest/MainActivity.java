@@ -37,7 +37,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String name = nameText.getText().toString();
                 String password = passwordText.getText().toString();
-                secretText.setText(dh.attemptGetSecretID(name, password));
+                String secretID = dh.attemptGetSecretID(name, password);
+                secretText.setText(secretID != null ? secretID : "Hidden");
             }
         });
 
