@@ -35,8 +35,8 @@ public class DatabaseHandler {
    *
    * @param superhero the Superhero to be added
    */
-  void put(Superhero superhero) {
-      db.addSuperhero(superhero);
+  boolean put(Superhero superhero) {
+      return db.addSuperhero(superhero);
   }
 
   /**
