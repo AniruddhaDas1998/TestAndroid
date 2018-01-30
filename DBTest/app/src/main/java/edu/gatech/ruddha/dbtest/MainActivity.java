@@ -40,6 +40,16 @@ public class MainActivity extends AppCompatActivity {
                 secretText.setText(dh.attemptGetSecretID(name, password));
             }
         });
+
+        addHero.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String name = nameText.getText().toString();
+                String password = passwordText.getText().toString();
+                String secretIdentity = secretText.getText().toString();
+                dh.put(new Superhero(name, secretIdentity, password));
+            }
+        });
     }
 
 }
