@@ -5,4 +5,10 @@ package edu.gatech.ruddha.dbtest;
  */
 
 public class DatabaseHandler {
+  void put(Superhero superhero) {
+
+  }
+  Superhero get(String name) {
+    return null;
+  }
 }
