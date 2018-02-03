@@ -31,6 +31,13 @@ public class DatabaseHandler {
     }
 
   /**
+   * Clears the existing database
+   */
+  public void clearDatabase() {
+      db.clearTables();
+    }
+
+  /**
    * Adds superhero to the backend
    *
    * @param superhero the Superhero to be added

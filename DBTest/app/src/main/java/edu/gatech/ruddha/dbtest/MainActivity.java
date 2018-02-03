@@ -18,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
     Button getSI;
     Button addHero;
     Button reset;
+    Button clear;
 
     DatabaseHandler dh;
 
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
         getSI  = (Button) findViewById(R.id.button_getSI);
         addHero = (Button) findViewById(R.id.button_addHero);
         reset = (Button) findViewById(R.id.button_reset);
+        clear = (Button) findViewById(R.id.button_clear);
 
         reset.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,6 +92,17 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-    }
 
+        clear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dh.clearDatabase();
+                Context context = getApplicationContext();
+                CharSequence text = "Database Cleared!";
+                int duration = Toast.LENGTH_SHORT;
+                Toast toast = Toast.makeText(context, text, duration);
+                toast.show();
+            }
+        });
+    }
 }
