@@ -6,7 +6,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.util.HashMap;
 import java.util.NoSuchElementException;
+
+import edu.gatech.ruddha.util.Encryption;
 
 /**
  * Class representation for backend of Database
@@ -104,6 +107,7 @@ public class DatabaseBackend extends SQLiteOpenHelper {
     public boolean addSuperhero(Superhero superhero) {
         String name = superhero.name;
         String password = superhero.password;
+        password = Encryption.encode(password);
         String secretID = superhero.secretIdentity;
         if (checkExists(name, TABLE_SUPERHEROES)) {
             return false;
@@ -159,6 +163,7 @@ public class DatabaseBackend extends SQLiteOpenHelper {
         if (name == null || password == null) {
             throw new NullPointerException("You have entered a null name or password!");
         }
+        password = Encryption.encode(password);
         SQLiteDatabase db = this.getReadableDatabase();
         String selectQuery = "SELECT * FROM " + TABLE_SUPERHEROES;
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -190,6 +195,22 @@ public class DatabaseBackend extends SQLiteOpenHelper {
         return secretID;
     }
 
+    public String viewDatabase() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String selectQuery = "SELECT * FROM " + TABLE_SUPERHEROES;
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        String output = "";
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                output = output + cursor.getString(0) + " | "
+                        + cursor.getString(1) + " | "
+                        + cursor.getString(2) + " | "
+                        + cursor.getString(3) + "\n";
+            } while (cursor.moveToNext());
+        }
+        return output;
+    }
     /**
      * method to reset the attempts of logins for all users. For debugging purposes only.
      */
@@ -208,5 +229,22 @@ public class DatabaseBackend extends SQLiteOpenHelper {
             } while (cursor.moveToNext());
         }
         db.close();
+    }
+
+    public HashMap<String, Superhero> getHashDatabase() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String selectQuery = "SELECT * FROM " + TABLE_SUPERHEROES;
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        HashMap<String, Superhero> output = new HashMap<>();
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                Superhero sh = new Superhero(cursor.getString(0),
+                        Encryption.decode(cursor.getString(1)),
+                        cursor.getString(2));
+                output.put(cursor.getString(0), sh);
+            } while (cursor.moveToNext());
+        }
+        return output;
     }
 }
