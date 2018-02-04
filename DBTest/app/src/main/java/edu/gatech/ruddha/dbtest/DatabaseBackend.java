@@ -241,7 +241,8 @@ public class DatabaseBackend extends SQLiteOpenHelper {
             do {
                 Superhero sh = new Superhero(cursor.getString(0),
                         Encryption.decode(cursor.getString(1)),
-                        cursor.getString(2));
+                        cursor.getString(2),
+                        Integer.parseInt(cursor.getString(3)) > 3);
                 output.put(cursor.getString(0), sh);
             } while (cursor.moveToNext());
         }
