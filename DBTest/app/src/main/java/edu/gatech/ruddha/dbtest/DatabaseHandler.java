@@ -30,40 +30,40 @@ public class DatabaseHandler {
 
     }
 
-  /**
-   * Clears the existing database
-   */
-  public void clearDatabase() {
-      db.clearTables();
+    /**
+     * Clears the existing database
+     */
+    public void clearDatabase() {
+        db.clearTables();
     }
 
-  /**
-   * Adds superhero to the backend
-   *
-   * @param superhero the Superhero to be added
-   */
+    /**
+     * Adds superhero to the backend
+     *
+     * @param superhero the Superhero to be added
+     */
     boolean put(Superhero superhero) {
-      return db.addSuperhero(superhero);
-  }
+        return db.addSuperhero(superhero);
+    }
 
-  /**
-   * Gets the superhero with the name
-   *
-   * @param name The name of the superhero to be got
-   * @return Superhero with the desired name
-   */
+    /**
+     * Gets the superhero with the name
+     *
+     * @param name The name of the superhero to be got
+     * @return Superhero with the desired name
+     */
     Superhero get(String name) {
-    return null;
-  }
+      return null;
+    }
 
-  /**
-   * Public method to get secret ID of superhero
-   *
-   * @param name the name of the superhero whose secret identity is queried
-   * @param password the password of above superhero.
-   * @return the secret ID if correct credentials or null if wrong
-   * @throws NullPointerException if name or password are null
-   */
+    /**
+     * Public method to get secret ID of superhero
+     *
+     * @param name the name of the superhero whose secret identity is queried
+     * @param password the password of above superhero.
+     * @return the secret ID if correct credentials or null if wrong
+     * @throws NullPointerException if name or password are null
+     */
     public String attemptGetSecretID(String name, String password) {
       return db.attemptGetSecretID(name, password);
     }
