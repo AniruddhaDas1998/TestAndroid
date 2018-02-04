@@ -43,11 +43,15 @@ public class DatabaseHandler {
      * @param superhero the Superhero to be added
      */
     boolean put(Superhero superhero) {
+<<<<<<< HEAD
       boolean success = db.addSuperhero(superhero);
         if (success) {
             populate();
         }
         return success;
+=======
+        return db.addSuperhero(superhero);
+>>>>>>> a95e68d709437fcbbb10b282a30368faa9e46edb
     }
 
     /**
@@ -57,7 +61,11 @@ public class DatabaseHandler {
      * @return Superhero with the desired name
      */
     Superhero get(String name) {
+<<<<<<< HEAD
         return null;
+=======
+      return null;
+>>>>>>> a95e68d709437fcbbb10b282a30368faa9e46edb
     }
 
     /**
