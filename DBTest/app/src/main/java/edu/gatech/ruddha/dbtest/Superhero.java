@@ -19,8 +19,6 @@ public class Superhero {
                    String areaOfOperation) {
     this.name = name;
     this.secretIdentity = secretIdentity;
-    // this.encryptionKey = (byte) (Math.random() * 256); // assigns a random encryption key
-    // this.password = encode(password);
     this.password = password;
     this.age = age;
     this.areaOfOperation = areaOfOperation;
