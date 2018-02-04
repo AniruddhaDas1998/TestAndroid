@@ -26,8 +26,8 @@ public class DatabaseHandler {
     /**
      * Populates the hashmap with the backend database
      */
-    private static void populate() {
-        elements = elements;
+    private void populate() {
+        elements = db.getHashDatabase();
     }
 
     /**
@@ -57,7 +57,7 @@ public class DatabaseHandler {
      * @return Superhero with the desired name
      */
     Superhero get(String name) {
-        return null;
+        return elements.get(name);
     }
 
     /**
