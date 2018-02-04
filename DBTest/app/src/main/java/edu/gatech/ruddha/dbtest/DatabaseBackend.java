@@ -107,7 +107,7 @@ public class DatabaseBackend extends SQLiteOpenHelper {
     public boolean addSuperhero(Superhero superhero) {
         String name = superhero.name;
         String password = superhero.password;
-        password = Encryption.encode(password)
+        password = Encryption.encode(password);
         String secretID = superhero.secretIdentity;
         if (checkExists(name, TABLE_SUPERHEROES)) {
             return false;
@@ -230,7 +230,7 @@ public class DatabaseBackend extends SQLiteOpenHelper {
         }
         db.close();
     }
-    
+
     public HashMap<String, Superhero> getHashDatabase() {
         SQLiteDatabase db = this.getReadableDatabase();
         String selectQuery = "SELECT * FROM " + TABLE_SUPERHEROES;
