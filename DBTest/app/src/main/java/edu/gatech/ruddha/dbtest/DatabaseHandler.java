@@ -69,6 +69,12 @@ public class DatabaseHandler {
      * @throws NullPointerException if name or password are null
      */
     public String attemptGetSecretID(String name, String password) {
+        if (elements.containsKey(name)) {
+            Superhero ret = elements.get(name);
+            if (ret.password.equals(password) && !ret.lockedOut) {
+                return ret.secretIdentity;
+            }
+        }
         return db.attemptGetSecretID(name, password);
     }
 
