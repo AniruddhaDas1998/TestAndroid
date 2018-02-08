@@ -86,7 +86,6 @@ public class DatabaseHandler {
             holderElems.get(userID).setLocketOut(true);
             throw e;
         }
-        }
     }
 
     /**
