@@ -22,23 +22,26 @@ public class DatabaseBackend extends SQLiteOpenHelper {
 
     // All Static variables
     // Database Version
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     // Database Name
     private static final String DATABASE_NAME = "TESTDB";
 
     // Contacts table name
-    private static final String TABLE_SUPERHEROES = "superheroes";
+    private static final String TABLE_SUPERHEROES = "superheroes"; // TODO: Remove
+    private static final String TABLE_USER = "userTable";
 
     // Contacts Table Columns names for both patient and physician
-    private static final String KEY_NAME = "name";
+    private static final String KEY_USERNAME = "username";
     private static final String KEY_PASSWORD = "password";
-    private static final String KEY_SECRETID = "secretIdentity";
     private static final String KEY_ATTEMPTS = "attempts";
+    private static final String KEY_CONTACT_INFO = "contactInfo";
+    private static final String KEY_GENDER = "gender";
+    private static final String KEY_DOB = "dob";
+    private static final String KEY_VETSTATUS = "veteran";
 
 
     private final String TAG = "DatabaseBackend";
-
     /**
      * Constructor for database backend
      *
@@ -71,9 +74,8 @@ public class DatabaseBackend extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // If you need to add a column
         if (newVersion > oldVersion) {
-            String str = "ALTER TABLE " + TABLE_SUPERHEROES + " ADD COLUMN " + "new_col INTEGER DEFAULT 0";
-            //db.execSQL("ALTER TABLE foo ADD COLUMN new_column INTEGER DEFAULT 0");
-            db.execSQL(str);
+            clearTables();
+            createDB();
         }
     }
     /**
@@ -82,11 +84,15 @@ public class DatabaseBackend extends SQLiteOpenHelper {
     private void createDB() {
         SQLiteDatabase db = this.getReadableDatabase();
         // Creating Database
-        String CREATE_PATIENTS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_SUPERHEROES + "("
-                + KEY_NAME + " TEXT PRIMARY KEY," +
-                KEY_PASSWORD + " TEXT," + KEY_SECRETID + " TEXT," +
-                KEY_ATTEMPTS + " INTEGER"  + ")";
-        db.execSQL(CREATE_PATIENTS_TABLE);
+        String CREATE_USER_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_SUPERHEROES + "("
+                + KEY_USERNAME + " TEXT PRIMARY KEY," +
+                KEY_PASSWORD + " TEXT," +
+                KEY_ATTEMPTS + " INTEGER," +
+                KEY_CONTACT_INFO + " TEXT," +
+                KEY_GENDER + " TEXT," +
+                KEY_DOB + " TEXT," +
+                KEY_VETSTATUS + " TEXT" + ")";
+        db.execSQL(CREATE_USER_TABLE);
     }
     /**
      * Private method to clear the created table and remake it.
@@ -94,6 +100,7 @@ public class DatabaseBackend extends SQLiteOpenHelper {
     public void clearTables() {
         SQLiteDatabase db = this.getReadableDatabase();
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_SUPERHEROES);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_USER);
         createDB();
     }
     /**
@@ -103,8 +110,8 @@ public class DatabaseBackend extends SQLiteOpenHelper {
      * @return whether the add was successful
      * @throws NullPointerException if superhero is null
      */
-    public boolean addSuperhero(Superhero superhero) {
-        String name = superhero.name;
+    public boolean addUser(User user) {
+        String name = user.name;
         String password = Encryption.encode(superhero.password);
         String secretID = superhero.secretIdentity;
         if (checkExists(name, TABLE_SUPERHEROES)) {
