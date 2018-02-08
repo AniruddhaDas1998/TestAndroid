@@ -14,26 +14,23 @@ import edu.gatech.ruddha.util.TooManyAttemptsException;
 import edu.gatech.ruddha.util.WrongPasswordException;
 
 /**
- * Class representation for backend of Database
+ * Class representation for backend of Database.
+ * **NOTE**: This class should never directly be called by any class other than DatabaseHandler.
  *
  * @author Sanath Nagaraj
- * @version 6.9
+ * @version 1.0
  */
 public class DatabaseBackend extends SQLiteOpenHelper {
     private Context mcontext;
 
-    // All Static variables
+    // All Static variables for the SQLite Database
     // Database Version
     private static final int DATABASE_VERSION = 2;
-
     // Database Name
     private static final String DATABASE_NAME = "TESTDB";
-
     // Contacts table name
-    //private static final String TABLE_SUPERHEROES = "superheroes"; // TODO: Remove
     private static final String TABLE_USER = "userTable";
-
-    // Contacts Table Columns names for both patient and physician
+    // Contacts Table Columns names for users
     private static final String KEY_USERNAME = "username";
     private static final String KEY_PASSWORD = "password";
     private static final String KEY_ATTEMPTS = "attempts";
@@ -41,7 +38,6 @@ public class DatabaseBackend extends SQLiteOpenHelper {
     private static final String KEY_GENDER = "gender";
     private static final String KEY_DOB = "dob";
     private static final String KEY_VETSTATUS = "veteran";
-
 
     private final String TAG = "DatabaseBackend";
     /**
@@ -63,6 +59,7 @@ public class DatabaseBackend extends SQLiteOpenHelper {
      */
     @Override
     public void onCreate(SQLiteDatabase db) {
+
     }
     /**
      * onUpgrade method to create db and satisfy superclass constraints. Check superclass
@@ -81,7 +78,9 @@ public class DatabaseBackend extends SQLiteOpenHelper {
         }
     }
     /**
-     * Private method to create a Database. Creates a single table to hold superhero data
+     * Private method to create a Database. Creates a single table to hold User object data
+     * NOTE: currently only stores: userID|password|lockedOut|contactInfo|gender|DOB|isVeteran|
+     * Other attributes will be added over time - This is all that is needed for M4.
      */
     private void createDB() {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -101,15 +100,17 @@ public class DatabaseBackend extends SQLiteOpenHelper {
      */
     public void clearTables() {
         SQLiteDatabase db = this.getReadableDatabase();
-        db.execSQL("DROP TABLE IF EXISTS " + "superheroes");
+        //db.execSQL("DROP TABLE IF EXISTS " + "superheroes");
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USER);
         createDB();
     }
     /**
-     * Public method to add a superhero
+     * Method to add user to the user database.
+     * NOTE: Currently this only adds the values for userID, password, locked out and contact info.
+     * other info is left as "TBD" for now - will implement as we need it.
      *
      * @param user The user to add to the database
-     * @return whether the add was successful
+     * @return whether the add was successful.
      * @throws NullPointerException if superhero is null
      */
     public boolean addUser(User user) {
@@ -140,11 +141,11 @@ public class DatabaseBackend extends SQLiteOpenHelper {
     }
 
     /**
-     * Private method to see if name exists as a key in tableSuperheroes
+     * Private method to see if name exists as a key in tableName
      *
      * @param name the name to check for in the database
-     * @param tableName the superheroTable to check in for this name
-     * @return whether name is a key in tableSuperheroes
+     * @param tableName the table to check in for this name
+     * @return whether name is a key in tableName
      */
     private boolean checkExists(String name, String tableName) {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -164,17 +165,25 @@ public class DatabaseBackend extends SQLiteOpenHelper {
     }
 
     /**
-     * Public method to get secret ID of superhero. Only returns ID if the name
-     * and password are correct
+     * Method to get attempt the login of a user with username and password. Checks for correct
+     * username and password. If no exceptions are thrown, it means the login was successful and
+     * an AccountHolder object representing the user who just logged in is returned. If an exception
+     * is thrown, there was a problem logging in (detailed below).
      *
-     * @param name the name of the superhero whose secret identity is queried
-     * @param password the password of above superhero.
-     * @return the secret ID if correct credentials or null if wrong
-     * @throws NullPointerException if name or password are null
-     * @throws NoSuchElementException if locked out
+     * NOTE: For now, the only non-null attributes of the returned AccountHolder will be username,
+     * password, lockedOut and contactInfo. More will be added as it is needed.
+     *
+     * @param username the username of the user trying to log in.
+     * @param password the password of above user.
+     * @return an AccountHolder object representing the user who just logged in
+     * @throws NullPointerException if username or password are null
+     * @throws PersonNotInDatabaseException if the username is not found in the database.
+     * @throws TooManyAttemptsException if the user is locked out, regardless whether the password
+     *      is correct.
+     * @throws WrongPasswordException if the username is found, but the password is wrong.
      */
-    public String attemptLogin(String name, String password) {
-        if (name == null || password == null) {
+    public AccountHolder attemptLogin(String username, String password) {
+        if (username == null || password == null) {
             throw new NullPointerException("You have entered a null username or password!");
         }
         password = Encryption.encode(password);
@@ -182,37 +191,46 @@ public class DatabaseBackend extends SQLiteOpenHelper {
         String selectQuery = "SELECT * FROM " + TABLE_USER;
         Cursor cursor = db.rawQuery(selectQuery, null);
         // looping through all rows and adding to list
-        String contactInfo = null;
+        AccountHolder holder = null;
         if (cursor.moveToFirst()) {
             do {
-                if (name.equals(cursor.getString(0))) {
-                    //Log.d(TAG, "attempts so far " + cursor.getString(3))
+                if (username.equals(cursor.getString(0))) {
                     if (Integer.parseInt(cursor.getString(2)) > 3) {
                         throw new TooManyAttemptsException();
                     }
                     if (password.equals(cursor.getString(1))) {
-                        contactInfo = cursor.getString(3);
+                        holder = new User(cursor.getString(0),
+                                Encryption.decode(cursor.getString(1)),
+                                Integer.parseInt(cursor.getString(2)) > 3,
+                                cursor.getString(3),
+                                null, null, false);
                         String command = "UPDATE " + TABLE_USER + " SET "
                                 + KEY_ATTEMPTS + " = 0 WHERE "
                                 + KEY_USERNAME + "=?";
-                        db.execSQL(command, new String[] {name});
+                        db.execSQL(command, new String[] {username});
+                        break;
                     } else {
                         String command = "UPDATE " + TABLE_USER + " SET "
                                 + KEY_ATTEMPTS + " = " + KEY_ATTEMPTS + " +1 WHERE "
                                 + KEY_USERNAME + "=?";
-                        db.execSQL(command, new String[] {name});
+                        db.execSQL(command, new String[] {username});
                         throw new WrongPasswordException();
                     }
                 }
             } while (cursor.moveToNext());
         }
-        if (contactInfo == null) {
+        if (holder == null) {
             throw new PersonNotInDatabaseException();
         }
         db.close();
-        return contactInfo;
+        return holder;
     }
 
+    /**
+     * Debugging method to view the database table in its current state
+     *
+     * @return a String representation of the database
+     */
     public String viewDatabase() {
         SQLiteDatabase db = this.getReadableDatabase();
         String selectQuery = "SELECT * FROM " + TABLE_USER;
@@ -234,7 +252,8 @@ public class DatabaseBackend extends SQLiteOpenHelper {
         return output;
     }
     /**
-     * method to reset the attempts of logins for all users. For debugging purposes only.
+     * method to reset the lockedOut status of logins for all users.
+     * NOTE: For debugging purposes only.
      */
     public void resetLogins() {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -253,6 +272,11 @@ public class DatabaseBackend extends SQLiteOpenHelper {
         db.close();
     }
 
+    /**
+     * Method to return a hashmap representation of the current database.
+     *
+     * @return a hashmap representation of database
+     */
     public HashMap<String, AccountHolder> getHashDatabase() {
         SQLiteDatabase db = this.getReadableDatabase();
         String selectQuery = "SELECT * FROM " + TABLE_USER;

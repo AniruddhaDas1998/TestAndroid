@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
                 String password = passwordText.getText().toString();
                 String text = "";
                 try {
-                    secretText.setText(dh.attemptGetContactInfoHolder(name, password));
+                    secretText.setText(dh.attemptLogin(name, password).getContactInfo());
                 } catch (TooManyAttemptsException e) {
                     text = "Too many log-in attempts!";
                     secretText.setText("<LOCKED OUT>");
