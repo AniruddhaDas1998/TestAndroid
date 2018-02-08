@@ -3,6 +3,7 @@ package edu.gatech.ruddha.dbtest;
 import android.content.Context;
 
 import java.util.HashMap;
+import java.util.NoSuchElementException;
 
 /**
  * Created by Sanath on 1/29/2018.
@@ -43,9 +44,9 @@ public class DatabaseHandler {
      * @param superhero the Superhero to be added
      */
     boolean put(Superhero superhero) {
-      boolean success = db.addSuperhero(superhero);
+        boolean success = db.addSuperhero(superhero);
         if (success) {
-            populate();
+            elements.put(superhero.name, superhero);
         }
         return success;
     }
@@ -73,9 +74,18 @@ public class DatabaseHandler {
             Superhero ret = elements.get(name);
             if (ret.password.equals(password) && !ret.lockedOut) {
                 return ret.secretIdentity;
+            } else if (ret.lockedOut) {
+                throw new NoSuchElementException("Account is locked out");
             }
+        } else {
+            return null;
         }
-        return db.attemptGetSecretID(name, password);
+        try {
+            return db.attemptGetSecretID(name, password);
+        } catch (NoSuchElementException e) {
+            elements.get(name).lockedOut = true;
+            throw e;
+        }
     }
 
     /**
