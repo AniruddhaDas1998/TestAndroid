@@ -47,7 +47,6 @@ public class DatabaseBackend extends SQLiteOpenHelper {
     public DatabaseBackend(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         mcontext = context;
-        //clearTables();
         createDB();
     }
 
@@ -76,12 +75,6 @@ public class DatabaseBackend extends SQLiteOpenHelper {
      */
     private void createDB() {
         SQLiteDatabase db = this.getReadableDatabase();
-        /* **IMPORTANT** If you change the columns of a sqlite table, you have to uncomment
-        the next lines of code relevant to that table and run the app to drop the existing table
-        and create a new one. If you are getting a sqlite error, try dropping both tables once,
-        then comment the lines again.
-         */
-
         // Creating Database
         String CREATE_PATIENTS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_SUPERHEROES + "("
                 + KEY_NAME + " TEXT PRIMARY KEY," +
@@ -106,8 +99,7 @@ public class DatabaseBackend extends SQLiteOpenHelper {
      */
     public boolean addSuperhero(Superhero superhero) {
         String name = superhero.name;
-        String password = superhero.password;
-        password = Encryption.encode(password);
+        String password = Encryption.encode(superhero.password);
         String secretID = superhero.secretIdentity;
         if (checkExists(name, TABLE_SUPERHEROES)) {
             return false;
