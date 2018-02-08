@@ -138,12 +138,12 @@ public class DatabaseBackend extends SQLiteOpenHelper {
      * Private method to see if name exists as a key in tableSuperheroes
      *
      * @param name the name to check for in the database
-     * @param tableSuperheroes the superheroTable to check in for this name
+     * @param tableName the superheroTable to check in for this name
      * @return whether name is a key in tableSuperheroes
      */
-    private boolean checkExists(String name, String tableSuperheroes) {
+    private boolean checkExists(String name, String tableName) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String selectQuery = "SELECT * FROM " + tableSuperheroes;
+        String selectQuery = "SELECT * FROM " + tableName;
         Cursor cursor = db.rawQuery(selectQuery, null);
         // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
@@ -250,8 +250,9 @@ public class DatabaseBackend extends SQLiteOpenHelper {
             do {
                 User user = new User(cursor.getString(0),
                         Encryption.decode(cursor.getString(1)),
-                        cursor.getString(2),
-                        Integer.parseInt(cursor.getString(3)) > 3);
+                        Integer.parseInt(cursor.getString(2)) > 3,
+                        cursor.getString(3),
+                        null, null, false);
                 output.put(cursor.getString(0), user);
             } while (cursor.moveToNext());
         }
