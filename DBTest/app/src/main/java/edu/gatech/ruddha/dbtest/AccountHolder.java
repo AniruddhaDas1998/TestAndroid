@@ -1,4 +1,4 @@
-package edu.gatech.cs2340.vaspa.buzzshelter.model;
+package edu.gatech.ruddha.dbtest;
 
 /**
  * Created by Sanath on 2/8/2018.
