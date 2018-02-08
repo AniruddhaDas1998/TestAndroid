@@ -5,6 +5,8 @@ import android.content.Context;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 
+import edu.gatech.ruddha.util.TooManyAttemptsException;
+
 /**
  * Created by Sanath on 1/29/2018.
  */
@@ -75,14 +77,14 @@ public class DatabaseHandler {
             if (ret.getPassword().equals(password) && !ret.isLockedOut()) {
                 return ret.getContactInfo();
             } else if (ret.isLockedOut()) {
-                throw new NoSuchElementException("Account is locked out");
+                throw new TooManyAttemptsException();
             }
         } else {
             return null;
         }
         try {
             return db.attemptLogin(userID, password);
-        } catch (NoSuchElementException e) {
+        } catch (TooManyAttemptsException e) {
             holderElems.get(userID).setLocketOut(true);
             throw e;
         }
@@ -94,5 +96,9 @@ public class DatabaseHandler {
     public void resetLogins() {
         db.resetLogins();
         populate();
+    }
+
+    public String viewDatabase() {
+        return db.viewDatabase();
     }
 }

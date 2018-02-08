@@ -3,12 +3,15 @@ package edu.gatech.ruddha.dbtest;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import java.util.NoSuchElementException;
+
+import edu.gatech.ruddha.util.TooManyAttemptsException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -19,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
     Button addHero;
     Button reset;
     Button clear;
+    Button showDB;
 
     DatabaseHandler dh;
 
@@ -39,6 +43,16 @@ public class MainActivity extends AppCompatActivity {
         addHero = (Button) findViewById(R.id.button_addHero);
         reset = (Button) findViewById(R.id.button_reset);
         clear = (Button) findViewById(R.id.button_clear);
+        showDB = (Button) findViewById(R.id.button_showDB);
+
+        showDB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.i("MainActivity", dh.viewDatabase());
+                Toast.makeText(getApplicationContext(), "Check Logcat!",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
 
         reset.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -62,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), text, duration).show();
                     }*/
                     secretText.setText(secretID != null ? secretID : "Hidden");
-                } catch (NoSuchElementException e) {
+                } catch (TooManyAttemptsException e) {
                     String text = "Too many log-in attempts!";
                     int duration = Toast.LENGTH_SHORT;
                     Toast.makeText(getApplicationContext(), text, duration).show();

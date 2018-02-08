@@ -10,6 +10,9 @@ import java.util.HashMap;
 import java.util.NoSuchElementException;
 
 import edu.gatech.ruddha.util.Encryption;
+import edu.gatech.ruddha.util.PersonNotInDatabaseException;
+import edu.gatech.ruddha.util.TooManyAttemptsException;
+import edu.gatech.ruddha.util.WrongPasswordException;
 
 /**
  * Class representation for backend of Database
@@ -99,7 +102,7 @@ public class DatabaseBackend extends SQLiteOpenHelper {
      */
     public void clearTables() {
         SQLiteDatabase db = this.getReadableDatabase();
-        //db.execSQL("DROP TABLE IF EXISTS " + TABLE_SUPERHEROES);
+        db.execSQL("DROP TABLE IF EXISTS " + "superheroes");
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USER);
         createDB();
     }
@@ -111,6 +114,9 @@ public class DatabaseBackend extends SQLiteOpenHelper {
      * @throws NullPointerException if superhero is null
      */
     public boolean addUser(User user) {
+        if (user == null) {
+            throw new NullPointerException("Inputted user cannot be null");
+        }
         String name = user.getUserId();
         String password = Encryption.encode(user.getPassword());
         String contactInfo = user.getContactInfo();
@@ -119,7 +125,7 @@ public class DatabaseBackend extends SQLiteOpenHelper {
             return false;
         }
         SQLiteDatabase db = this.getWritableDatabase();
-        // Storing values for patient
+        // Storing values for user
         ContentValues newUser = new ContentValues();
         newUser.put(KEY_USERNAME, name);
         newUser.put(KEY_PASSWORD, password);
@@ -182,8 +188,8 @@ public class DatabaseBackend extends SQLiteOpenHelper {
             do {
                 if (name.equals(cursor.getString(0))) {
                     //Log.d(TAG, "attempts so far " + cursor.getString(3))
-                    if (Integer.parseInt(cursor.getString(3)) > 3) {
-                        throw new NoSuchElementException("Too many attempts"); // TODO: Update
+                    if (Integer.parseInt(cursor.getString(2)) > 3) {
+                        throw new TooManyAttemptsException();
                     }
                     if (password.equals(cursor.getString(1))) {
                         contactInfo = cursor.getString(3);
@@ -196,9 +202,13 @@ public class DatabaseBackend extends SQLiteOpenHelper {
                                 + KEY_ATTEMPTS + " = " + KEY_ATTEMPTS + " +1 WHERE "
                                 + KEY_USERNAME + "=?";
                         db.execSQL(command, new String[] {name});
+                        throw new WrongPasswordException();
                     }
                 }
             } while (cursor.moveToNext());
+        }
+        if (contactInfo == null) {
+            throw new PersonNotInDatabaseException();
         }
         db.close();
         return contactInfo;
@@ -208,16 +218,20 @@ public class DatabaseBackend extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         String selectQuery = "SELECT * FROM " + TABLE_USER;
         Cursor cursor = db.rawQuery(selectQuery, null);
-        String output = "";
+        String output = String.format("|%-20s|%-20s|%-5s|%-20s|\n", "Username",
+                "Password",
+                "Num Attempts",
+                "Contact Info");
         // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
             do {
-                output = output + cursor.getString(0) + " | "
-                        + cursor.getString(1) + " | "
-                        + cursor.getString(2) + " | "
-                        + cursor.getString(3) + "\n";
+                output = output + String.format("|%-20s|%-20s|%-5s|%-20s|\n", cursor.getString(0),
+                        Encryption.decode(cursor.getString(1)),
+                        cursor.getString(2),
+                        cursor.getString(3));
             } while (cursor.moveToNext());
         }
+        db.close();
         return output;
     }
     /**
