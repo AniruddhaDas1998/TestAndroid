@@ -93,5 +93,6 @@ public class DatabaseHandler {
      */
     public void resetLogins() {
         db.resetLogins();
+        populate();
     }
 }
