@@ -69,6 +69,12 @@ public class DatabaseBackend extends SQLiteOpenHelper {
      */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        // If you need to add a column
+        if (newVersion > oldVersion) {
+            String str = "ALTER TABLE " + TABLE_SUPERHEROES + " ADD COLUMN " + "new_col INTEGER DEFAULT 0";
+            //db.execSQL("ALTER TABLE foo ADD COLUMN new_column INTEGER DEFAULT 0");
+            db.execSQL(str);
+        }
     }
     /**
      * Private method to create a Database. Creates a single table to hold superhero data
