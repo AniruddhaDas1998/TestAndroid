@@ -5,6 +5,7 @@ import android.content.Context;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 
+import edu.gatech.ruddha.util.PersonNotInDatabaseException;
 import edu.gatech.ruddha.util.TooManyAttemptsException;
 
 /**
@@ -80,7 +81,7 @@ public class DatabaseHandler {
                 throw new TooManyAttemptsException();
             }
         } else {
-            return null;
+            throw new PersonNotInDatabaseException();
         }
         try {
             return db.attemptLogin(userID, password);

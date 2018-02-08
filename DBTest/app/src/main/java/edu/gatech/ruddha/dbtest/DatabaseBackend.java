@@ -7,7 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.HashMap;
-import java.util.NoSuchElementException;
 
 import edu.gatech.ruddha.util.Encryption;
 import edu.gatech.ruddha.util.PersonNotInDatabaseException;
@@ -218,14 +217,14 @@ public class DatabaseBackend extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         String selectQuery = "SELECT * FROM " + TABLE_USER;
         Cursor cursor = db.rawQuery(selectQuery, null);
-        String output = String.format("|%-20s|%-20s|%-5s|%-20s|\n", "Username",
+        String output = String.format("|%-20s|%-20s|%-20s|%-20s|\n", "Username",
                 "Password",
                 "Num Attempts",
                 "Contact Info");
         // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
             do {
-                output = output + String.format("|%-20s|%-20s|%-5s|%-20s|\n", cursor.getString(0),
+                output = output + String.format("|%-20s|%-20s|%-20s|%-20s|\n", cursor.getString(0),
                         Encryption.decode(cursor.getString(1)),
                         cursor.getString(2),
                         cursor.getString(3));

@@ -11,7 +11,9 @@ import android.widget.Toast;
 
 import java.util.NoSuchElementException;
 
+import edu.gatech.ruddha.util.PersonNotInDatabaseException;
 import edu.gatech.ruddha.util.TooManyAttemptsException;
+import edu.gatech.ruddha.util.WrongPasswordException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -68,20 +70,21 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String name = nameText.getText().toString();
                 String password = passwordText.getText().toString();
+                String text = "";
                 try {
-                    String secretID = dh.attemptGetContactInfoHolder(name, password);
-                    /*if (secretID == null) {
-                        String text = "Cannot reveal password!";
-                        int duration = Toast.LENGTH_SHORT;
-                        Toast.makeText(getApplicationContext(), text, duration).show();
-                    }*/
-                    secretText.setText(secretID != null ? secretID : "Hidden");
+                    secretText.setText(dh.attemptGetContactInfoHolder(name, password));
                 } catch (TooManyAttemptsException e) {
-                    String text = "Too many log-in attempts!";
-                    int duration = Toast.LENGTH_SHORT;
-                    Toast.makeText(getApplicationContext(), text, duration).show();
+                    text = "Too many log-in attempts!";
                     secretText.setText("<LOCKED OUT>");
+                } catch (PersonNotInDatabaseException e) {
+                    text = "Username not found";
+                    secretText.setText("");
+                } catch (WrongPasswordException e) {
+                    text = "Wrong password!";
+                    secretText.setText("****");
                 }
+                int duration = Toast.LENGTH_SHORT;
+                Toast.makeText(getApplicationContext(), text, duration).show();
             }
         });
 
