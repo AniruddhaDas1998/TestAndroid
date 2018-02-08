@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
                 String name = nameText.getText().toString();
                 String password = passwordText.getText().toString();
                 try {
-                    String secretID = dh.attemptGetSecretID(name, password);
+                    String secretID = dh.attemptGetContactInfoHolder(name, password);
                     /*if (secretID == null) {
                         String text = "Cannot reveal password!";
                         int duration = Toast.LENGTH_SHORT;
@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
                 String name = nameText.getText().toString();
                 String password = passwordText.getText().toString();
                 String secretIdentity = secretText.getText().toString();
-                if(dh.put(new Superhero(name, secretIdentity, password))) {
+                if(dh.putUser(new User(name, secretIdentity, password))) {
                     Context context = getApplicationContext();
                     CharSequence text = "Added " + name + "!";
                     int duration = Toast.LENGTH_SHORT;

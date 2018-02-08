@@ -9,6 +9,12 @@ public abstract class AccountHolder {
     private String password;
     private boolean lockedOut;
     private String contactInfo;
+    public AccountHolder(String userId, String password, boolean lockedOut, String contactInfo) {
+        this.userId = userId;
+        this.password = password;
+        this.lockedOut = lockedOut;
+        this.contactInfo = contactInfo;
+    }
 
     public String getUserId() {
         return userId;

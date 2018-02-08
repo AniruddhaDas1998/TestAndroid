@@ -11,8 +11,6 @@ import java.util.NoSuchElementException;
 
 public class DatabaseHandler {
 
-    private static HashMap<String, Superhero> elements;
-
     private static HashMap<String, AccountHolder> holderElems;
 
     private DatabaseBackend db;
@@ -22,7 +20,6 @@ public class DatabaseHandler {
     public DatabaseHandler(Context context) {
         this.context = context;
         db = new DatabaseBackend(this.context);
-        elements = new HashMap<>();
         holderElems = new HashMap<>();
         populate();
     }
@@ -31,7 +28,7 @@ public class DatabaseHandler {
      * Populates the hashmap with the backend database
      */
     private void populate() {
-        elements = db.getHashDatabase();
+        holderElems = db.getHashDatabase();
     }
 
     /**
@@ -42,40 +39,16 @@ public class DatabaseHandler {
     }
 
     /**
-     * Adds superhero to the backend
-     *
-     * @param superhero the Superhero to be added
-     */
-    boolean put(Superhero superhero) {
-        boolean success = db.addSuperhero(superhero);
-        if (success) {
-            elements.put(superhero.name, superhero);
-        }
-        return success;
-    }
-
-    /**
      * Adds accountholder to the backend
      *
      * @param accountHolder the Superhero to be added
      */
     boolean putUser(AccountHolder accountHolder) {
-        boolean success = db.addUser(accountHolder);
+        boolean success = db.addUser((User) accountHolder);
         if (success) {
             holderElems.put(accountHolder.getUserId(), accountHolder);
         }
         return success;
-    }
-
-
-    /**
-     * Gets the superhero with the name
-     *
-     * @param name The name of the superhero to be got
-     * @return Superhero with the desired name
-     */
-    Superhero get(String name) {
-        return elements.get(name);
     }
 
     /**
@@ -86,33 +59,6 @@ public class DatabaseHandler {
      */
     AccountHolder getHolder(String userID) {
         return holderElems.get(userID);
-    }
-
-    /**
-     * Public method to get secret ID of superhero
-     *
-     * @param name the name of the superhero whose secret identity is queried
-     * @param password the password of above superhero.
-     * @return the secret ID if correct credentials or null if wrong
-     * @throws NullPointerException if name or password are null
-     */
-    public String attemptGetSecretID(String name, String password) {
-        if (elements.containsKey(name)) {
-            Superhero ret = elements.get(name);
-            if (ret.password.equals(password) && !ret.lockedOut) {
-                return ret.secretIdentity;
-            } else if (ret.lockedOut) {
-                throw new NoSuchElementException("Account is locked out");
-            }
-        } else {
-            return null;
-        }
-        try {
-            return db.attemptGetSecretID(name, password);
-        } catch (NoSuchElementException e) {
-            elements.get(name).lockedOut = true;
-            throw e;
-        }
     }
 
     /**
@@ -135,10 +81,11 @@ public class DatabaseHandler {
             return null;
         }
         try {
-            return db.attemptGetSecretID(userID, password);
+            return db.attemptLogin(userID, password);
         } catch (NoSuchElementException e) {
             holderElems.get(userID).setLocketOut(true);
             throw e;
+        }
         }
     }
 
