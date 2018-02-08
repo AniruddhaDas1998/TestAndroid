@@ -28,7 +28,7 @@ public class DatabaseBackend extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "TESTDB";
 
     // Contacts table name
-    private static final String TABLE_SUPERHEROES = "superheroes"; // TODO: Remove
+    //private static final String TABLE_SUPERHEROES = "superheroes"; // TODO: Remove
     private static final String TABLE_USER = "userTable";
 
     // Contacts Table Columns names for both patient and physician
@@ -74,8 +74,8 @@ public class DatabaseBackend extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // If you need to add a column
         if (newVersion > oldVersion) {
-            clearTables();
-            createDB();
+            //clearTables();
+            //createDB();
         }
     }
     /**
@@ -84,7 +84,7 @@ public class DatabaseBackend extends SQLiteOpenHelper {
     private void createDB() {
         SQLiteDatabase db = this.getReadableDatabase();
         // Creating Database
-        String CREATE_USER_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_SUPERHEROES + "("
+        String CREATE_USER_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_USER + "("
                 + KEY_USERNAME + " TEXT PRIMARY KEY," +
                 KEY_PASSWORD + " TEXT," +
                 KEY_ATTEMPTS + " INTEGER," +
@@ -99,7 +99,7 @@ public class DatabaseBackend extends SQLiteOpenHelper {
      */
     public void clearTables() {
         SQLiteDatabase db = this.getReadableDatabase();
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SUPERHEROES);
+        //db.execSQL("DROP TABLE IF EXISTS " + TABLE_SUPERHEROES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USER);
         createDB();
     }
@@ -206,7 +206,7 @@ public class DatabaseBackend extends SQLiteOpenHelper {
 
     public String viewDatabase() {
         SQLiteDatabase db = this.getReadableDatabase();
-        String selectQuery = "SELECT * FROM " + TABLE_SUPERHEROES;
+        String selectQuery = "SELECT * FROM " + TABLE_USER;
         Cursor cursor = db.rawQuery(selectQuery, null);
         String output = "";
         // looping through all rows and adding to list
@@ -225,13 +225,13 @@ public class DatabaseBackend extends SQLiteOpenHelper {
      */
     public void resetLogins() {
         SQLiteDatabase db = this.getReadableDatabase();
-        String selectQuery = "SELECT * FROM " + TABLE_SUPERHEROES;
+        String selectQuery = "SELECT * FROM " + TABLE_USER;
         Cursor cursor = db.rawQuery(selectQuery, null);
         // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
             do {
                 String name = cursor.getString(0);
-                String command = "UPDATE " + TABLE_SUPERHEROES + " SET "
+                String command = "UPDATE " + TABLE_USER + " SET "
                         + KEY_ATTEMPTS + " = 0 WHERE "
                         + KEY_USERNAME + "=?";
                 db.execSQL(command, new String[] {name});
