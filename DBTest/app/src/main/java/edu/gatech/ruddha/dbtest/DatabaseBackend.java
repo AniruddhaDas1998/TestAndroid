@@ -106,26 +106,30 @@ public class DatabaseBackend extends SQLiteOpenHelper {
     /**
      * Public method to add a superhero
      *
-     * @param superhero The superhero to add to the database
+     * @param user The user to add to the database
      * @return whether the add was successful
      * @throws NullPointerException if superhero is null
      */
     public boolean addUser(User user) {
-        String name = user.name;
-        String password = Encryption.encode(superhero.password);
-        String secretID = superhero.secretIdentity;
-        if (checkExists(name, TABLE_SUPERHEROES)) {
+        String name = user.getUserId();
+        String password = Encryption.encode(user.getPassword());
+        String contactInfo = user.getContactInfo();
+
+        if (checkExists(name, TABLE_USER)) {
             return false;
         }
         SQLiteDatabase db = this.getWritableDatabase();
         // Storing values for patient
-        ContentValues newHero = new ContentValues();
-        newHero.put(KEY_NAME, name);
-        newHero.put(KEY_PASSWORD, password);
-        newHero.put(KEY_SECRETID, secretID);
-        newHero.put(KEY_ATTEMPTS, 0);
+        ContentValues newUser = new ContentValues();
+        newUser.put(KEY_USERNAME, name);
+        newUser.put(KEY_PASSWORD, password);
+        newUser.put(KEY_ATTEMPTS, 0);
+        newUser.put(KEY_CONTACT_INFO, contactInfo);
+        newUser.put(KEY_GENDER, "TBD");
+        newUser.put(KEY_DOB, "TBD");
+        newUser.put(KEY_VETSTATUS, "TBD");
         // Inserting Row
-        db.insert(TABLE_SUPERHEROES, null, newHero);
+        db.insert(TABLE_USER, null, newUser);
         db.close();
         return true;
     }
@@ -164,40 +168,40 @@ public class DatabaseBackend extends SQLiteOpenHelper {
      * @throws NullPointerException if name or password are null
      * @throws NoSuchElementException if locked out
      */
-    public String attemptGetSecretID(String name, String password) {
+    public String attemptLogin(String name, String password) {
         if (name == null || password == null) {
-            throw new NullPointerException("You have entered a null name or password!");
+            throw new NullPointerException("You have entered a null username or password!");
         }
         password = Encryption.encode(password);
         SQLiteDatabase db = this.getReadableDatabase();
-        String selectQuery = "SELECT * FROM " + TABLE_SUPERHEROES;
+        String selectQuery = "SELECT * FROM " + TABLE_USER;
         Cursor cursor = db.rawQuery(selectQuery, null);
         // looping through all rows and adding to list
-        String secretID = null;
+        String contactInfo = null;
         if (cursor.moveToFirst()) {
             do {
                 if (name.equals(cursor.getString(0))) {
                     //Log.d(TAG, "attempts so far " + cursor.getString(3))
                     if (Integer.parseInt(cursor.getString(3)) > 3) {
-                        throw new NoSuchElementException("Too many attempts");
+                        throw new NoSuchElementException("Too many attempts"); // TODO: Update
                     }
                     if (password.equals(cursor.getString(1))) {
-                        secretID = cursor.getString(2);
-                        String command = "UPDATE " + TABLE_SUPERHEROES + " SET "
+                        contactInfo = cursor.getString(3);
+                        String command = "UPDATE " + TABLE_USER + " SET "
                                 + KEY_ATTEMPTS + " = 0 WHERE "
-                                + KEY_NAME + "=?";
+                                + KEY_USERNAME + "=?";
                         db.execSQL(command, new String[] {name});
                     } else {
-                        String command = "UPDATE " + TABLE_SUPERHEROES + " SET "
+                        String command = "UPDATE " + TABLE_USER + " SET "
                                 + KEY_ATTEMPTS + " = " + KEY_ATTEMPTS + " +1 WHERE "
-                                + KEY_NAME + "=?";
+                                + KEY_USERNAME + "=?";
                         db.execSQL(command, new String[] {name});
                     }
                 }
             } while (cursor.moveToNext());
         }
         db.close();
-        return secretID;
+        return contactInfo;
     }
 
     public String viewDatabase() {
@@ -229,26 +233,26 @@ public class DatabaseBackend extends SQLiteOpenHelper {
                 String name = cursor.getString(0);
                 String command = "UPDATE " + TABLE_SUPERHEROES + " SET "
                         + KEY_ATTEMPTS + " = 0 WHERE "
-                        + KEY_NAME + "=?";
+                        + KEY_USERNAME + "=?";
                 db.execSQL(command, new String[] {name});
             } while (cursor.moveToNext());
         }
         db.close();
     }
 
-    public HashMap<String, Superhero> getHashDatabase() {
+    public HashMap<String, AccountHolder> getHashDatabase() {
         SQLiteDatabase db = this.getReadableDatabase();
-        String selectQuery = "SELECT * FROM " + TABLE_SUPERHEROES;
+        String selectQuery = "SELECT * FROM " + TABLE_USER;
         Cursor cursor = db.rawQuery(selectQuery, null);
-        HashMap<String, Superhero> output = new HashMap<>();
+        HashMap<String, AccountHolder> output = new HashMap<>();
         // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
             do {
-                Superhero sh = new Superhero(cursor.getString(0),
+                User user = new User(cursor.getString(0),
                         Encryption.decode(cursor.getString(1)),
                         cursor.getString(2),
                         Integer.parseInt(cursor.getString(3)) > 3);
-                output.put(cursor.getString(0), sh);
+                output.put(cursor.getString(0), user);
             } while (cursor.moveToNext());
         }
         return output;
