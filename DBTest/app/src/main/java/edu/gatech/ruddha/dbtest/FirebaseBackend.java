@@ -2,6 +2,7 @@ package edu.gatech.ruddha.dbtest;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.util.Patterns;
 import android.widget.Toast;
 
@@ -10,6 +11,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.auth.FirebaseUser;
 
 /**
  * Created by Sanath on 2/10/2018.
@@ -55,8 +57,24 @@ public class FirebaseBackend {
     }
 
 
-    public AccountHolder attemptLogin(String username, String password) {
-        return null;
+    public void attemptLogin(final Context context, String username, String password) {
+        mAuth.signInWithEmailAndPassword(username, password)
+          .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+              @Override
+              public void onComplete(@NonNull Task<AuthResult> task) {
+                  if (task.isSuccessful()) {
+                      // Sign in success, update UI with the signed-in user's information
+                      FirebaseUser user = mAuth.getCurrentUser();
+                      Log.d(TAG, user.getEmail() + " " + user.getDisplayName());
+                      Toast.makeText(context, "Authentication successful!",
+                        Toast.LENGTH_SHORT).show();
+                  } else {
+                      // If sign in fails, display a message to the user.
+                      Toast.makeText(context, "Authentication failed!",
+                        Toast.LENGTH_SHORT).show();
+                  }
+              }
+          });
     }
 
     public void resetLogins() {

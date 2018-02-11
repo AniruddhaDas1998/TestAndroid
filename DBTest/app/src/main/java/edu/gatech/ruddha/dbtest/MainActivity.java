@@ -11,10 +11,6 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 
-import edu.gatech.ruddha.util.PersonNotInDatabaseException;
-import edu.gatech.ruddha.util.TooManyAttemptsException;
-import edu.gatech.ruddha.util.WrongPasswordException;
-
 public class MainActivity extends AppCompatActivity {
 
     EditText nameText;
@@ -73,21 +69,22 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String name = nameText.getText().toString();
                 String password = passwordText.getText().toString();
-                String text = "";
-                try {
-                    secretText.setText(dh.attemptLogin(name, password).getContactInfo());
-                } catch (TooManyAttemptsException e) {
-                    text = "Too many log-in attempts!";
-                    secretText.setText("<LOCKED OUT>");
-                } catch (PersonNotInDatabaseException e) {
-                    text = "Username not found";
-                    secretText.setText("");
-                } catch (WrongPasswordException e) {
-                    text = "Wrong password!";
-                    secretText.setText("****");
-                }
-                int duration = Toast.LENGTH_SHORT;
-                Toast.makeText(getApplicationContext(), text, duration).show();
+                dh.attemptLogin(name, password);
+//                String text = "";
+//                try {
+//                    secretText.setText(dh.attemptLogin(name, password).getContactInfo());
+//                } catch (TooManyAttemptsException e) {
+//                    text = "Too many log-in attempts!";
+//                    secretText.setText("<LOCKED OUT>");
+//                } catch (PersonNotInDatabaseException e) {
+//                    text = "Username not found";
+//                    secretText.setText("");
+//                } catch (WrongPasswordException e) {
+//                    text = "Wrong password!";
+//                    secretText.setText("****");
+//                }
+                //int duration = Toast.LENGTH_SHORT;
+                //Toast.makeText(getApplicationContext(), text, duration).show();
             }
         });
 
