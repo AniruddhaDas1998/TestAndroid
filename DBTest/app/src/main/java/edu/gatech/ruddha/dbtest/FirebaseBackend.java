@@ -13,45 +13,64 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 /**
  * Created by Sanath on 2/10/2018.
  */
 
 public class FirebaseBackend {
-
     private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+    private FirebaseDatabase database;
+    private DatabaseReference myRef;
 
     private static String TAG = "FirebaseBackend";
 
-    private boolean isSuccess;
-    // private boolean changed;
-
     FirebaseBackend() {
         mAuth = FirebaseAuth.getInstance();
+        database = FirebaseDatabase.getInstance();
     }
 
     public void addUser(final Context context, User user) {
-        final String ogName = user.getUserId();
-        String email = user.getUserId();
+        final User ogUser = user;
+        String email = user.getUserId().trim();
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             email += "@temp.com";
         }
-        // TODO: Check password length and blank inputs
-        mAuth.createUserWithEmailAndPassword(email, user.getPassword())
+        if (user.getPassword().length() < 7) {
+            Toast.makeText(context, "Password too short!",
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (user.getUserId().isEmpty()) {
+            Toast.makeText(context, "Username cannot be empty!",
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+        mAuth.createUserWithEmailAndPassword(email, user.getPassword().trim())
           .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
               @Override
               public void onComplete(@NonNull Task<AuthResult> task) {
                   if (!task.isSuccessful()) {
                       if (task.getException() instanceof FirebaseAuthUserCollisionException) {
-                          Toast.makeText(context, ogName + " already exists",
+                          Toast.makeText(context, ogUser.getUserId() + " already exists",
                             Toast.LENGTH_SHORT).show();
                       } else {
                           throw new NullPointerException(task.getException().getMessage());
                       }
                   } else {
-                      Toast.makeText(context, ogName + " added!",
+                      Toast.makeText(context, ogUser.getUserId() + " added!",
                         Toast.LENGTH_SHORT).show();
+                      Intent intent = new Intent(context, MainPageActivity.class);
+                      FirebaseUser firebaseUser = mAuth.getCurrentUser();
+                      updateCurrentUser(firebaseUser.getUid(), ogUser);
+                      intent.putExtra("UID", firebaseUser.getUid());
+                      intent.putExtra("username", ogUser.getUserId());
+                      intent.putExtra("password", ogUser.getPassword());
+                      intent.putExtra("contactInfo", ogUser.getContactInfo());
+                      context.startActivity(intent);
                   }
               }
           });
@@ -59,6 +78,8 @@ public class FirebaseBackend {
 
 
     public void attemptLogin(final Context context, String username, String password) {
+        username = username.trim();
+        password = password.trim();
         if (!Patterns.EMAIL_ADDRESS.matcher(username).matches()) {
             username += "@temp.com";
         }
@@ -73,8 +94,8 @@ public class FirebaseBackend {
                       Toast.makeText(context, "Authentication successful!",
                         Toast.LENGTH_SHORT).show();
                       Intent intent = new Intent(context, MainPageActivity.class);
+                      intent.putExtra("UID", user.getUid());
                       context.startActivity(intent);
-                      mAuth.signOut();
                   } else {
                       // If sign in fails, display a message to the user.
                       Toast.makeText(context, "Authentication failed!",
@@ -82,6 +103,15 @@ public class FirebaseBackend {
                   }
               }
           });
+    }
+
+    public void updateCurrentUser(String UID, User user) {
+        myRef = database.getReference();
+        myRef.child("users").child(UID).setValue(user);
+    }
+
+    public void logout() {
+        mAuth.signOut();
     }
 
     public void resetLogins() {

@@ -15,6 +15,9 @@ public abstract class AccountHolder {
         this.lockedOut = lockedOut;
         this.contactInfo = contactInfo;
     }
+    public AccountHolder() {
+
+    }
 
     public String getUserId() {
         return userId;

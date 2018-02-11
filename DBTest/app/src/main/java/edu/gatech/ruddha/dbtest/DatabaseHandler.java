@@ -76,23 +76,11 @@ public class DatabaseHandler {
      */
     public AccountHolder attemptLogin(String userID, String password) {
         fb.attemptLogin(context, userID, password);
-//        if (holderElems.containsKey(userID)) {
-//            AccountHolder ret = holderElems.get(userID);
-//            if (ret.getPassword().equals(password) && !ret.isLockedOut()) {
-//                return ret;
-//            } else if (ret.isLockedOut()) {
-//                throw new TooManyAttemptsException();
-//            }
-//        } else {
-//            throw new PersonNotInDatabaseException();
-//        }
-//        try {
-//            return db.attemptLogin(userID, password);
-//        } catch (TooManyAttemptsException e) {
-//            holderElems.get(userID).setLocketOut(true);
-//            throw e;
-//        }
         return null;
+    }
+
+    public void logout() {
+        fb.logout();
     }
 
     /******************************************************************************************
