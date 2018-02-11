@@ -1,6 +1,7 @@
 package edu.gatech.ruddha.dbtest;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.Patterns;
@@ -58,6 +59,9 @@ public class FirebaseBackend {
 
 
     public void attemptLogin(final Context context, String username, String password) {
+        if (!Patterns.EMAIL_ADDRESS.matcher(username).matches()) {
+            username += "@temp.com";
+        }
         mAuth.signInWithEmailAndPassword(username, password)
           .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
               @Override
@@ -68,6 +72,9 @@ public class FirebaseBackend {
                       Log.d(TAG, user.getEmail() + " " + user.getDisplayName());
                       Toast.makeText(context, "Authentication successful!",
                         Toast.LENGTH_SHORT).show();
+                      Intent intent = new Intent(context, MainPageActivity.class);
+                      context.startActivity(intent);
+                      mAuth.signOut();
                   } else {
                       // If sign in fails, display a message to the user.
                       Toast.makeText(context, "Authentication failed!",
