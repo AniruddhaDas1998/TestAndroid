@@ -9,7 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import java.util.NoSuchElementException;
+import com.google.firebase.auth.FirebaseAuth;
 
 import edu.gatech.ruddha.util.PersonNotInDatabaseException;
 import edu.gatech.ruddha.util.TooManyAttemptsException;
@@ -28,11 +28,14 @@ public class MainActivity extends AppCompatActivity {
 
     DatabaseHandler dh;
 
+    private FirebaseAuth mAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         dh = new DatabaseHandler(this);
+
 
         /*
          * Grab the dialog widgets so we can get info for later
@@ -94,19 +97,7 @@ public class MainActivity extends AppCompatActivity {
                 String name = nameText.getText().toString();
                 String password = passwordText.getText().toString();
                 String secretIdentity = secretText.getText().toString();
-                if(dh.putUser(new User(name, secretIdentity, password))) {
-                    Context context = getApplicationContext();
-                    CharSequence text = "Added " + name + "!";
-                    int duration = Toast.LENGTH_SHORT;
-                    Toast toast = Toast.makeText(context, text, duration);
-                    toast.show();
-                } else {
-                    Context context = getApplicationContext();
-                    CharSequence text = name + " already in database";
-                    int duration = Toast.LENGTH_SHORT;
-                    Toast toast = Toast.makeText(context, text, duration);
-                    toast.show();
-                }
+                dh.putUser(new User(name, secretIdentity, password));
             }
         });
 

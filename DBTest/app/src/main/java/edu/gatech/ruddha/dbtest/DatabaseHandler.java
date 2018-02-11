@@ -3,7 +3,6 @@ package edu.gatech.ruddha.dbtest;
 import android.content.Context;
 
 import java.util.HashMap;
-import java.util.NoSuchElementException;
 
 import edu.gatech.ruddha.util.PersonNotInDatabaseException;
 import edu.gatech.ruddha.util.TooManyAttemptsException;
@@ -28,7 +27,9 @@ import edu.gatech.ruddha.util.WrongPasswordException;
 public class DatabaseHandler {
     private static HashMap<String, AccountHolder> holderElems;
     private DatabaseBackend db;
+    private FirebaseBackend fb;
     private Context context;
+
     /******************************************************************************************
      * METHODS NEEDED TO IMPLEMENT M4 and M5
      *******************************************************************************************/
@@ -41,6 +42,7 @@ public class DatabaseHandler {
     public DatabaseHandler(Context context) {
         this.context = context;
         db = new DatabaseBackend(this.context);
+        fb = new FirebaseBackend();
         holderElems = new HashMap<>();
         populate();
     }
@@ -50,12 +52,8 @@ public class DatabaseHandler {
      *
      * @param accountHolder the Superhero to be added
      */
-    boolean putUser(AccountHolder accountHolder) {
-        boolean success = db.addUser((User) accountHolder);
-        if (success) {
-            holderElems.put(accountHolder.getUserId(), accountHolder);
-        }
-        return success;
+    public void putUser(AccountHolder accountHolder) {
+        fb.addUser(context, (User) accountHolder);
     }
 
     /**

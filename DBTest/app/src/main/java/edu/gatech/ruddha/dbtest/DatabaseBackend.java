@@ -21,6 +21,7 @@ import edu.gatech.ruddha.util.WrongPasswordException;
  * @version 1.0
  */
 public class DatabaseBackend extends SQLiteOpenHelper {
+
     private Context mcontext;
 
     // All Static variables for the SQLite Database
@@ -104,7 +105,7 @@ public class DatabaseBackend extends SQLiteOpenHelper {
      */
     public void clearTables() {
         SQLiteDatabase db = this.getReadableDatabase();
-        //db.execSQL("DROP TABLE IF EXISTS " + "superheroes");
+        // db.execSQL("DROP TABLE IF EXISTS " + "superheroes");
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USER);
         createDB();
     }
