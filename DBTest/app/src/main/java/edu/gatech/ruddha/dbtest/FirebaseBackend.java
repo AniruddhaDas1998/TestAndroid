@@ -63,14 +63,8 @@ public class FirebaseBackend {
                   } else {
                       Toast.makeText(context, ogUser.getUserId() + " added!",
                         Toast.LENGTH_SHORT).show();
-                      Intent intent = new Intent(context, MainPageActivity.class);
                       FirebaseUser firebaseUser = mAuth.getCurrentUser();
                       updateCurrentUser(firebaseUser.getUid(), ogUser);
-                      intent.putExtra("UID", firebaseUser.getUid());
-                      intent.putExtra("username", ogUser.getUserId());
-                      intent.putExtra("password", ogUser.getPassword());
-                      intent.putExtra("contactInfo", ogUser.getContactInfo());
-                      context.startActivity(intent);
                   }
               }
           });
