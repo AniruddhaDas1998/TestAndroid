@@ -13,8 +13,11 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 /**
  * Created by Sanath on 2/10/2018.
@@ -26,11 +29,14 @@ public class FirebaseBackend {
     private FirebaseDatabase database;
     private DatabaseReference myRef;
 
+    private AccountHolder currentlyLoggedIn;
+
     private static String TAG = "FirebaseBackend";
 
     FirebaseBackend() {
         mAuth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
+        updateCurrentLoggedIn();
     }
 
     public void addUser(final Context context, User user) {
@@ -64,7 +70,7 @@ public class FirebaseBackend {
                       Toast.makeText(context, ogUser.getUserId() + " added!",
                         Toast.LENGTH_SHORT).show();
                       FirebaseUser firebaseUser = mAuth.getCurrentUser();
-                      updateCurrentUser(firebaseUser.getUid(), ogUser);
+                      addCurrentUser(firebaseUser.getUid(), ogUser);
                   }
               }
           });
@@ -89,6 +95,8 @@ public class FirebaseBackend {
                         Toast.LENGTH_SHORT).show();
                       Intent intent = new Intent(context, MainPageActivity.class);
                       intent.putExtra("UID", user.getUid());
+                      intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                      //updateCurrentLoggedIn();
                       context.startActivity(intent);
                   } else {
                       // If sign in fails, display a message to the user.
@@ -99,7 +107,7 @@ public class FirebaseBackend {
           });
     }
 
-    public void updateCurrentUser(String UID, User user) {
+    public void addCurrentUser(String UID, User user) {
         myRef = database.getReference();
         myRef.child("users").child(UID).setValue(user);
     }
@@ -112,4 +120,27 @@ public class FirebaseBackend {
 
     }
 
+    public void updateCurrentLoggedIn() {
+        myRef = database.getReference();
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.i(TAG, "In update current logged in ");
+                if (mAuth.getCurrentUser() != null) {
+                    String UID = mAuth.getCurrentUser().getUid();
+                    currentlyLoggedIn = dataSnapshot.child("users").child(UID).getValue(User.class);
+                    Log.i(TAG, currentlyLoggedIn.getUserId());
+                    //MainPageActivity.usernameET.setText("Hello");
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public AccountHolder getCurrentLoggedIn() {
+        return currentlyLoggedIn;
+    }
 }

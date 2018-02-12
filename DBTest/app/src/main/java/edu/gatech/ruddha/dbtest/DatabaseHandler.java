@@ -83,6 +83,10 @@ public class DatabaseHandler {
         fb.logout();
     }
 
+    public AccountHolder getCurrentLoggedIn() {
+        return fb.getCurrentLoggedIn();
+    }
+
     /******************************************************************************************
      * METHODS YOU CAN IGNORE WHILE IMPLEMENTING M4 and M5
      *******************************************************************************************/
