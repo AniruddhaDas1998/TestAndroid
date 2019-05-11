@@ -9,11 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import java.util.NoSuchElementException;
-
-import edu.gatech.ruddha.util.PersonNotInDatabaseException;
-import edu.gatech.ruddha.util.TooManyAttemptsException;
-import edu.gatech.ruddha.util.WrongPasswordException;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -28,11 +24,14 @@ public class MainActivity extends AppCompatActivity {
 
     DatabaseHandler dh;
 
+    private FirebaseAuth mAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         dh = new DatabaseHandler(this);
+
 
         /*
          * Grab the dialog widgets so we can get info for later
@@ -70,21 +69,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String name = nameText.getText().toString();
                 String password = passwordText.getText().toString();
-                String text = "";
-                try {
-                    secretText.setText(dh.attemptLogin(name, password).getContactInfo());
-                } catch (TooManyAttemptsException e) {
-                    text = "Too many log-in attempts!";
-                    secretText.setText("<LOCKED OUT>");
-                } catch (PersonNotInDatabaseException e) {
-                    text = "Username not found";
-                    secretText.setText("");
-                } catch (WrongPasswordException e) {
-                    text = "Wrong password!";
-                    secretText.setText("****");
-                }
-                int duration = Toast.LENGTH_SHORT;
-                Toast.makeText(getApplicationContext(), text, duration).show();
+                dh.attemptLogin(name, password);
             }
         });
 
@@ -94,19 +79,7 @@ public class MainActivity extends AppCompatActivity {
                 String name = nameText.getText().toString();
                 String password = passwordText.getText().toString();
                 String secretIdentity = secretText.getText().toString();
-                if(dh.putUser(new User(name, secretIdentity, password))) {
-                    Context context = getApplicationContext();
-                    CharSequence text = "Added " + name + "!";
-                    int duration = Toast.LENGTH_SHORT;
-                    Toast toast = Toast.makeText(context, text, duration);
-                    toast.show();
-                } else {
-                    Context context = getApplicationContext();
-                    CharSequence text = name + " already in database";
-                    int duration = Toast.LENGTH_SHORT;
-                    Toast toast = Toast.makeText(context, text, duration);
-                    toast.show();
-                }
+                dh.putUser(new User(name, secretIdentity, password));
             }
         });
 

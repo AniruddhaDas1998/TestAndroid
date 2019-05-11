@@ -21,6 +21,7 @@ import edu.gatech.ruddha.util.WrongPasswordException;
  * @version 1.0
  */
 public class DatabaseBackend extends SQLiteOpenHelper {
+
     private Context mcontext;
 
     // All Static variables for the SQLite Database
@@ -40,6 +41,7 @@ public class DatabaseBackend extends SQLiteOpenHelper {
     private static final String KEY_VETSTATUS = "veteran";
 
     private final String TAG = "DatabaseBackend";
+
     /**
      * Constructor for database backend
      *
@@ -61,6 +63,7 @@ public class DatabaseBackend extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
 
     }
+
     /**
      * onUpgrade method to create db and satisfy superclass constraints. Check superclass
      * documentation for further information.
@@ -77,6 +80,7 @@ public class DatabaseBackend extends SQLiteOpenHelper {
             //createDB();
         }
     }
+
     /**
      * Private method to create a Database. Creates a single table to hold User object data
      * NOTE: currently only stores: userID|password|lockedOut|contactInfo|gender|DOB|isVeteran|
@@ -95,15 +99,17 @@ public class DatabaseBackend extends SQLiteOpenHelper {
                 KEY_VETSTATUS + " TEXT" + ")";
         db.execSQL(CREATE_USER_TABLE);
     }
+
     /**
      * Private method to clear the created table and remake it.
      */
     public void clearTables() {
         SQLiteDatabase db = this.getReadableDatabase();
-        //db.execSQL("DROP TABLE IF EXISTS " + "superheroes");
+        // db.execSQL("DROP TABLE IF EXISTS " + "superheroes");
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USER);
         createDB();
     }
+
     /**
      * Method to add user to the user database.
      * NOTE: Currently this only adds the values for userID, password, locked out and contact info.
@@ -251,6 +257,7 @@ public class DatabaseBackend extends SQLiteOpenHelper {
         db.close();
         return output;
     }
+
     /**
      * method to reset the lockedOut status of logins for all users.
      * NOTE: For debugging purposes only.

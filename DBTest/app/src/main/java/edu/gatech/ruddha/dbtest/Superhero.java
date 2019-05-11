@@ -14,6 +14,8 @@ public class Superhero {
 
   public Superhero(String name, String secretIdentity, String password) {
     this(name, secretIdentity, password, 21, "Planet Earth", false);
+    // THIS IS A TEST OF GTENS
+    // GTENS <3
   }
 
   public Superhero(String name, String secretIdentity, String password, boolean lockedOut) {
